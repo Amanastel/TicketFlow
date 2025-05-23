@@ -168,19 +168,19 @@ Content-Type: application/json
 {
   "passengers": [
     {
-      "name": "John Doe",
+      "name": "Aman Singh",
       "age": 65,
       "gender": "male"
     },
     {
-      "name": "Jane Doe",
+      "name": "Priti Singh",
       "age": 35,
       "gender": "female",
       "is_parent": true,
       "parent_identifier": "family1"
     },
     {
-      "name": "Baby Doe",
+      "name": "Karan Singh",
       "age": 3,
       "gender": "female",
       "parent_identifier": "family1"
@@ -197,21 +197,21 @@ Content-Type: application/json
   "passengers": [
     {
       "id": 1,
-      "name": "John Doe",
+      "name": "Aman Singh",
       "age": 65,
       "gender": "male",
       "berth": "lower"
     },
     {
       "id": 2,
-      "name": "Jane Doe",
+      "name": "Priti Singh",
       "age": 35,
       "gender": "female",
       "berth": "middle"
     },
     {
       "id": 3,
-      "name": "Baby Doe",
+      "name": "Karan Singh",
       "age": 3,
       "gender": "female",
       "berth": null
@@ -251,7 +251,7 @@ GET /api/v1/tickets/booked
       "passengers": [
         {
           "id": 4,
-          "name": "Alice Smith",
+          "name": "Sumit",
           "age": 45,
           "gender": "female",
           "berth": "lower"
@@ -266,7 +266,7 @@ GET /api/v1/tickets/booked
       "passengers": [
         {
           "id": 5,
-          "name": "Bob Johnson",
+          "name": "Raju",
           "age": 50,
           "gender": "male",
           "berth": "side-lower",
@@ -325,4 +325,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Author
 
-[Your Name]
+Aman Kumar
