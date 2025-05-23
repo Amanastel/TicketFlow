@@ -1,0 +1,96 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Project specific
+*.db
+railway.db
+*.sqlite3
+logs/
+*.log
+*.log.*
+
+# Docker
+docker-compose.override.yml
+.docker/
+
+# Test coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Production
+.env.prod
+*.pem
+*.key
+*.cert
+*.crt
+
+# Documentation
+docs/_build/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+.*.swp
+
+# Local development configuration
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Redis
+dump.rdb
+
+# Nginx
+nginx/logs/
+nginx/*.log
+
+# Node (if using any JS tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

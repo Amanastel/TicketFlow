@@ -1,0 +1,588 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Railway Reservation API",
+    "description": "API for booking, cancelling, and managing railway tickets",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "email": "support@ticketflow.example.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "basePath": "/api/v1",
+  "schemes": ["http", "https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "API health check operations"
+    },
+    {
+      "name": "Tickets",
+      "description": "Ticket booking and management operations"
+    },
+    {
+      "name": "Status",
+      "description": "Status checking operations"
+    }
+  ],
+  "paths": {
+    "/tickets/health": {
+      "get": {
+        "summary": "API Health Check",
+        "description": "Check the health status of the API and database connection",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "System is healthy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "healthy"
+                },
+                "database": {
+                  "type": "string",
+                  "example": "connected"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "System is unhealthy",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "unhealthy"
+                },
+                "database": {
+                  "type": "string",
+                  "example": "disconnected"
+                },
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/book": {
+      "post": {
+        "summary": "Book a ticket for one or more passengers",
+        "description": "Book a ticket and allocate berths according to availability and priority",
+        "tags": ["Tickets"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": ["passengers"],
+              "properties": {
+                "passengers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "age", "gender"],
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the passenger"
+                      },
+                      "age": {
+                        "type": "integer",
+                        "description": "Age of the passenger"
+                      },
+                      "gender": {
+                        "type": "string",
+                        "enum": ["male", "female", "other"],
+                        "description": "Gender of the passenger"
+                      },
+                      "is_parent": {
+                        "type": "boolean",
+                        "description": "Whether this passenger is a parent"
+                      },
+                      "parent_identifier": {
+                        "type": "string",
+                        "description": "Identifier to link child to parent"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ticket booked successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ticket_id": {
+                  "type": "integer",
+                  "description": "ID of the booked ticket"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["confirmed", "rac", "waiting"],
+                  "description": "Status of the ticket"
+                },
+                "passengers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "description": "Passenger ID"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the passenger"
+                      },
+                      "age": {
+                        "type": "integer",
+                        "description": "Age of the passenger"
+                      },
+                      "gender": {
+                        "type": "string",
+                        "description": "Gender of the passenger"
+                      },
+                      "berth": {
+                        "type": "string",
+                        "description": "Type of berth allocated (if any)"
+                      },
+                      "rac_position": {
+                        "type": "integer",
+                        "description": "RAC position (if in RAC)"
+                      },
+                      "waiting_position": {
+                        "type": "integer",
+                        "description": "Waiting list position (if in waiting list)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or no tickets available",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/cancel/{ticket_id}": {
+      "post": {
+        "summary": "Cancel a booked ticket",
+        "description": "Cancel a ticket and promote tickets from RAC and waiting list",
+        "tags": ["Tickets"],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the ticket to cancel"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket cancelled successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Success message"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ticket not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/booked": {
+      "get": {
+        "summary": "Get all booked tickets",
+        "description": "Retrieve details of all booked tickets (confirmed, RAC, waiting)",
+        "tags": ["Status"],
+        "responses": {
+          "200": {
+            "description": "List of booked tickets",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "confirmed": {
+                  "type": "array",
+                  "description": "List of confirmed tickets",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ticket_id": {
+                        "type": "integer",
+                        "description": "Ticket ID"
+                      },
+                      "booking_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Time of booking"
+                      },
+                      "passengers": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "description": "Passenger ID"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Passenger name"
+                            },
+                            "age": {
+                              "type": "integer",
+                              "description": "Passenger age"
+                            },
+                            "gender": {
+                              "type": "string",
+                              "description": "Passenger gender"
+                            },
+                            "berth": {
+                              "type": "string",
+                              "description": "Allocated berth type"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "rac": {
+                  "type": "array",
+                  "description": "List of RAC tickets",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ticket_id": {
+                        "type": "integer",
+                        "description": "Ticket ID"
+                      },
+                      "booking_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Time of booking"
+                      },
+                      "passengers": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "description": "Passenger ID"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Passenger name"
+                            },
+                            "age": {
+                              "type": "integer",
+                              "description": "Passenger age"
+                            },
+                            "gender": {
+                              "type": "string",
+                              "description": "Passenger gender"
+                            },
+                            "berth": {
+                              "type": "string",
+                              "description": "Allocated berth type"
+                            },
+                            "rac_position": {
+                              "type": "integer",
+                              "description": "RAC position"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "waiting": {
+                  "type": "array",
+                  "description": "List of waiting list tickets",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ticket_id": {
+                        "type": "integer",
+                        "description": "Ticket ID"
+                      },
+                      "booking_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Time of booking"
+                      },
+                      "passengers": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "description": "Passenger ID"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Passenger name"
+                            },
+                            "age": {
+                              "type": "integer",
+                              "description": "Passenger age"
+                            },
+                            "gender": {
+                              "type": "string",
+                              "description": "Passenger gender"
+                            },
+                            "waiting_position": {
+                              "type": "integer",
+                              "description": "Waiting list position"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "summary": {
+                  "type": "object",
+                  "properties": {
+                    "confirmed_count": {
+                      "type": "integer",
+                      "description": "Number of confirmed tickets"
+                    },
+                    "rac_count": {
+                      "type": "integer",
+                      "description": "Number of RAC tickets"
+                    },
+                    "waiting_count": {
+                      "type": "integer",
+                      "description": "Number of waiting list tickets"
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "description": "Total number of tickets"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/available": {
+      "get": {
+        "summary": "Get available ticket information",
+        "description": "Retrieve information about available tickets (confirmed, RAC, waiting)",
+        "tags": ["Status"],
+        "responses": {
+          "200": {
+            "description": "Available ticket information",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "confirmed_available": {
+                  "type": "integer",
+                  "description": "Number of available confirmed berths"
+                },
+                "rac_available": {
+                  "type": "integer",
+                  "description": "Number of available RAC positions"
+                },
+                "waiting_list_available": {
+                  "type": "integer",
+                  "description": "Number of available waiting list positions"
+                },
+                "available_berths": {
+                  "type": "object",
+                  "properties": {
+                    "lower": {
+                      "type": "integer",
+                      "description": "Number of available lower berths"
+                    },
+                    "middle": {
+                      "type": "integer",
+                      "description": "Number of available middle berths"
+                    },
+                    "upper": {
+                      "type": "integer",
+                      "description": "Number of available upper berths"
+                    },
+                    "side_lower": {
+                      "type": "integer",
+                      "description": "Number of available side-lower berths"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "description": "Error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Passenger": {
+      "type": "object",
+      "required": ["name", "age", "gender"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Passenger name"
+        },
+        "age": {
+          "type": "integer",
+          "description": "Passenger age"
+        },
+        "gender": {
+          "type": "string",
+          "enum": ["male", "female", "other"],
+          "description": "Passenger gender"
+        }
+      }
+    },
+    "Ticket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Ticket ID"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["confirmed", "rac", "waiting", "cancelled"],
+          "description": "Ticket status"
+        },
+        "booking_time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Time of booking"
+        }
+      }
+    },
+    "Berth": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Berth ID"
+        },
+        "berth_type": {
+          "type": "string",
+          "enum": ["lower", "middle", "upper", "side-lower"],
+          "description": "Type of berth"
+        },
+        "is_allocated": {
+          "type": "boolean",
+          "description": "Whether the berth is allocated"
+        }
+      }
+    }
+  }
+}

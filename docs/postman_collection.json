@@ -1,0 +1,293 @@
+{
+	"info": {
+		"_postman_id": "b2a5e6a9-1f3b-4e85-8be5-c7b0a3e4e5d7",
+		"name": "Railway Reservation API",
+		"description": "Collection for testing the Railway Reservation API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/tickets/health",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tickets",
+						"health"
+					]
+				},
+				"description": "Check the health status of the API and database connection."
+			},
+			"response": []
+		},
+		{
+			"name": "1. Get Available Tickets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/tickets/available",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tickets",
+						"available"
+					]
+				},
+				"description": "Get information about available tickets, including confirmed berths, RAC positions, and waiting list positions."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get Booked Tickets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/tickets/booked",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tickets",
+						"booked"
+					]
+				},
+				"description": "Get all booked tickets categorized by their status (confirmed, RAC, waiting)."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Book Ticket - Senior Citizen",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"passengers\": [\n    {\n      \"name\": \"John Smith\",\n      \"age\": 65,\n      \"gender\": \"male\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/tickets/book",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tickets",
+						"book"
+					]
+				},
+				"description": "Book a ticket for a senior citizen (should get lower berth priority)."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Book Ticket - Lady with Child",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"passengers\": [\n    {\n      \"name\": \"Mary Johnson\",\n      \"age\": 32,\n      \"gender\": \"female\",\n      \"is_parent\": true,\n      \"parent_identifier\": \"family2\"\n    },\n    {\n      \"name\": \"Little Johnson\",\n      \"age\": 4,\n      \"gender\": \"male\",\n      \"parent_identifier\": \"family2\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/tickets/book",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tickets",
+						"book"
+					]
+				},
+				"description": "Book a ticket for a lady with a child (should get lower berth priority)."
+			},
+			"response": []
+		},
+		{
+			"name": "5. Cancel Ticket",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/tickets/cancel/1",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tickets",
+						"cancel",
+						"1"
+					]
+				},
+				"description": "Cancel a booked ticket (will promote tickets from RAC and waiting list)."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5001",
+			"type": "string"
+		}
+	]
+}
+		{
+			"name": "2. Get Booked Tickets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/tickets/booked",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tickets",
+						"booked"
+					]
+				},
+				"description": "Get all booked tickets categorized by their status (confirmed, RAC, waiting)."
+			},
+			"response": []
+		},
+						"api",
+						"v1",
+						"tickets",
+						"booked"
+					]
+				},
+				"description": "Get all booked tickets with passenger details."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Available Tickets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/tickets/available",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tickets",
+						"available"
+					]
+				},
+				"description": "Get information about available tickets and berths."
+			},
+			"response": []
+		},
+		{
+			"name": "Book Ticket - Lady with Child",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"passengers\": [\n    {\n      \"name\": \"Mary Johnson\",\n      \"age\": 32,\n      \"gender\": \"female\",\n      \"is_parent\": true,\n      \"parent_identifier\": \"family2\"\n    },\n    {\n      \"name\": \"Little Johnson\",\n      \"age\": 4,\n      \"gender\": \"male\",\n      \"parent_identifier\": \"family2\"\n    }\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/tickets/book",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tickets",
+						"book"
+					]
+				},
+				"description": "Book a ticket for a lady with a child (should get lower berth priority)."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5001",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ticketflow:production
+    container_name: ticketflow_app_prod
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://ticketflow:${DB_PASSWORD:-ticketflow}@db:5432/ticketflow
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+      - RATE_LIMIT_STORAGE_URI=redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: gunicorn --bind 0.0.0.0:5000 --workers 4 'run:app'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/tickets/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    volumes:
+      - ./logs:/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - ticketflow_network
+
+  db:
+    image: postgres:15-alpine
+    container_name: ticketflow_db_prod
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=ticketflow
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-ticketflow}
+      - POSTGRES_DB=ticketflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ticketflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ticketflow_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ticketflow_redis_prod
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - ticketflow_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  ticketflow_network:
+    driver: bridge
