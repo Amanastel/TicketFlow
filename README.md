@@ -147,7 +147,34 @@ The project includes comprehensive unit and integration tests:
 
 ## Database Schema
 
-![ER Diagram](./docs/er_diagram.png)
+
+## Entity Relationship Diagram
+
+```
++----------------+       +----------------+       +----------------+
+|   passengers   |       |     tickets    |       |     berths     |
++----------------+       +----------------+       +----------------+
+| id (PK)        |       | id (PK)        |       | id (PK)        |
+| name           |       | status         |       | berth_type     |
+| age            |       | booking_time   |       | is_allocated   |
+| gender         |<----->| rac_position   |       | passenger_id   |
+| child          |       | waiting_position|      +----------------+
+| parent_id (FK) |       +----------------+              ^
+| ticket_id (FK) |               ^                       |
++----------------+               |                       |
+                                 |                       |
+                                 |                       |
+                            +-----------------------------+
+                            | berth_allocation_history    |
+                            +-----------------------------+
+                            | id (PK)                     |
+                            | ticket_id (FK)              |
+                            | berth_id (FK)               |
+                            | rac_position                |
+                            | waiting_position            |
+                            | created_at                  |
+                            +-----------------------------+
+```
 
 The system uses a relational database with the following tables:
 
