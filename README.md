@@ -47,7 +47,7 @@ A comprehensive API for managing railway ticket reservations, including booking,
 
 1. Clone the repository:
    ```
-   git clone <repository-url>
+   git clone https://github.com/Amanastel/TicketFlow
    cd ticketFlow
    ```
 
